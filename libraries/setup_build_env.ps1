@@ -89,7 +89,7 @@ if (-not(Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf)) {
   pushd libraries\gn
   try {
     Invoke-Expression "${depot_tools}/python.bat build/gen.py"
-    Invoke-Expression "${depot_tools}/ninja.exe -C out gn.exe"
+    Invoke-Expression "${depot_tools}/ninja.bat -C out gn.exe"
     popd
   } catch {
     Write-Host ""
