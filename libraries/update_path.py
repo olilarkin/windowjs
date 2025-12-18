@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -10,6 +10,6 @@ ninja = '%s/libraries/ninja' % repo
 
 paths = os.environ['PATH'].split(os.pathsep)
 
-PATH = os.pathsep.join(p for p in paths if not repo in p and not '.vpython-root' in p)
+PATH = os.pathsep.join(p for p in paths if repo not in p and '.vpython-root' not in p)
 
-print '%s%s%s%s%s%s%s' % (ninja, os.pathsep, gn, os.pathsep, depot_tools, os.pathsep, PATH)
+print('%s%s%s%s%s%s%s' % (ninja, os.pathsep, gn, os.pathsep, depot_tools, os.pathsep, PATH))
