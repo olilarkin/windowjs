@@ -29,14 +29,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install packages
         run: brew install upx
 
+      - name: Install Python dependencies
+        run: pip3 install setuptools
+
       - name: Cache
         id: cache-libraries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             libraries/angle/include
@@ -111,7 +114,7 @@ jobs:
           stat -f%z out/windowjs
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windowjs
           path: |
