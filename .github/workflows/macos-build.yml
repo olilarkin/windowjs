@@ -34,6 +34,9 @@ jobs:
       - name: Install packages
         run: brew install upx
 
+      - name: Install Python dependencies
+        run: pip3 install setuptools
+
       - name: Cache
         id: cache-libraries
         uses: actions/cache@v4
