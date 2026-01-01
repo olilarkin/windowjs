@@ -136,7 +136,7 @@ if ($gnCmd) {
     Write-Host ""
     pushd libraries\gn
     try {
-      python build/gen.py
+      python build/gen.py --no-last-commit-position
       ninja -C out gn.exe
       popd
     } catch {

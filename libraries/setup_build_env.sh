@@ -131,7 +131,7 @@ else
     echo "Building the gn build tool"
     echo
     pushd libraries/gn
-    python3 build/gen.py
+    python3 build/gen.py --no-last-commit-position
     ninja -C out gn
     popd
   fi
