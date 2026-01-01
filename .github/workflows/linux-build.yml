@@ -36,7 +36,6 @@ jobs:
             cmake \
             clang \
             ninja-build \
-            generate-ninja \
             libfontconfig-dev \
             libjpeg-turbo8-dev \
             libwebp-dev \
