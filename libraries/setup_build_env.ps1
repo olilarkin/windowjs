@@ -64,16 +64,19 @@ if (-not(Test-Path -Path 'libraries\depot_tools' -PathType Container)) {
 }
 
 
-$depot_tools = "$(pwd)/libraries/depot_tools"
+$depot_tools = "$(pwd)\libraries\depot_tools"
 
 $env:DEPOT_TOOLS_WIN_TOOLCHAIN = "0"
+
+# Add depot_tools to PATH early so cipd is available
+$env:path = "${depot_tools};$env:path"
 
 Write-Host ""
 Write-Host "Verifying depot_tools gclient version (this may download additional tools)"
 Write-Host ""
 
 try {
-  Invoke-Expression "${depot_tools}/gclient.bat validate --version"
+  & "${depot_tools}\gclient.bat" validate --version
 } catch {
   Write-Host ""
   Write-Host "Failed to initialize gclient."
@@ -116,21 +119,42 @@ if ($ninjaCmd) {
 }
 
 
-# Use gn from depot_tools (it downloads pre-built binaries automatically)
-# No need to build from source - depot_tools handles this
+# Download gn using cipd (Chrome Infrastructure Package Deployment)
+# This is more reliable than depot_tools' gn wrapper which may try to build from source
 Write-Host ""
-Write-Host "Updating PATH to use depot_tools and ninja"
+Write-Host "Setting up gn build tool"
+Write-Host ""
+
+$gn_dir = "$(pwd)\libraries\gn_bin"
+if (-not(Test-Path -Path "${gn_dir}\gn.exe" -PathType Leaf)) {
+  New-Item -ItemType Directory -Force -Path $gn_dir | Out-Null
+
+  Write-Host "Downloading gn for windows-amd64..."
+  & "${depot_tools}\cipd.bat" install gn/gn/windows-amd64 -root $gn_dir
+
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "Failed to download gn via cipd"
+    Write-Host ""
+    Write-Host "FAILED"
+    exit 1
+  }
+}
+
+
+Write-Host ""
+Write-Host "Updating PATH to use gn, depot_tools, and ninja"
+
+# Add gn to PATH
+$env:path = "${gn_dir};$env:path"
 
 # Add local ninja to PATH if built from source
 if (Test-Path -Path 'libraries\ninja\ninja.exe' -PathType Leaf) {
   $env:path = "$(pwd)\libraries\ninja;$env:path"
 }
-# depot_tools provides gn, gclient, and other tools
-$env:path = "${depot_tools};$env:path"
 
-# Ensure depot_tools downloads gn binary
-Write-Host "Ensuring gn is available from depot_tools..."
-Invoke-Expression "${depot_tools}/gn.bat --version"
+# depot_tools provides gclient and other tools
+$env:path = "${depot_tools};$env:path"
 
 Write-Host ""
 Write-Host "Verifying gn and ninja in PATH"

@@ -108,22 +108,55 @@ else
 fi
 
 
-# Use gn from depot_tools (it downloads pre-built binaries automatically)
-# No need to build from source - depot_tools handles this
+# Download gn using cipd (Chrome Infrastructure Package Deployment)
+# This is more reliable than depot_tools' gn wrapper which may try to build from source
 echo
-echo "Updating PATH to use depot_tools and ninja"
+echo "Setting up gn build tool"
 echo
+
+gn_dir="$PWD/libraries/gn_bin"
+if [ ! -f "${gn_dir}/gn" ]; then
+  mkdir -p "${gn_dir}"
+
+  # Detect platform
+  case "$(uname -s)" in
+    Linux*)  gn_platform="linux-amd64" ;;
+    Darwin*)
+      case "$(uname -m)" in
+        arm64) gn_platform="mac-arm64" ;;
+        *)     gn_platform="mac-amd64" ;;
+      esac
+      ;;
+    *)       gn_platform="linux-amd64" ;;
+  esac
+
+  echo "Downloading gn for ${gn_platform}..."
+  "${depot_tools}/cipd" install gn/gn/${gn_platform} -root "${gn_dir}"
+
+  if [ $? -ne 0 ]; then
+    echo
+    echo "Failed to download gn via cipd"
+    echo
+    echo FAILED
+    return 1
+  fi
+fi
+
+
+echo
+echo "Updating PATH to use gn, depot_tools, and ninja"
+echo
+
+# Add gn to PATH
+export PATH="${gn_dir}:$PATH"
 
 # Add local ninja to PATH if built from source
 if [ -f "libraries/ninja/ninja" ]; then
   export PATH="$PWD/libraries/ninja:$PATH"
 fi
-# depot_tools provides gn, gclient, and other tools
-export PATH="${depot_tools}:$PATH"
 
-# Ensure depot_tools downloads gn binary
-echo "Ensuring gn is available from depot_tools..."
-"${depot_tools}/gn" --version
+# depot_tools provides gclient and other tools
+export PATH="${depot_tools}:$PATH"
 
 # Forgets all remembered locations:
 hash -r

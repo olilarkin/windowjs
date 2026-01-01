@@ -46,6 +46,7 @@ jobs:
             libraries/angle/include
             libraries/angle/out
             libraries/depot_tools
+            libraries/gn_bin
             libraries/glfw
             libraries/skia/include
             libraries/skia/modules
@@ -55,11 +56,12 @@ jobs:
             libraries/v8/third_party/zlib
             libraries/v8/out
             libraries/libuv
-          key: windows-2025-v2-${{ hashFiles('.gclient', 'libraries/*-args-windows.gn', 'libraries/build_*.bat') }}
+          key: windows-2025-v3-${{ hashFiles('.gclient', 'libraries/*-args-windows.gn', 'libraries/build_*.bat') }}
 
       - name: Setup build environment
         run: |
           libraries/setup_build_env.ps1
+          echo "$env:GITHUB_WORKSPACE/libraries/gn_bin" >> $env:GITHUB_PATH
           echo "$env:GITHUB_WORKSPACE/libraries/depot_tools" >> $env:GITHUB_PATH
 
       - name: Sync dependencies

@@ -58,6 +58,7 @@ jobs:
             libraries/angle/include
             libraries/angle/out
             libraries/depot_tools
+            libraries/gn_bin
             libraries/glfw
             libraries/skia/include
             libraries/skia/modules
@@ -67,11 +68,12 @@ jobs:
             libraries/v8/third_party/zlib
             libraries/v8/out
             libraries/libuv
-          key: linux-2025-v2-${{ hashFiles('.gclient', 'libraries/*-args-linux.gn', 'libraries/build_*.sh') }}
+          key: linux-2025-v3-${{ hashFiles('.gclient', 'libraries/*-args-linux.gn', 'libraries/build_*.sh') }}
 
       - name: Setup build environment
         run: |
           source libraries/setup_build_env.sh
+          echo "$PWD/libraries/gn_bin" >> $GITHUB_PATH
           echo "$PWD/libraries/depot_tools" >> $GITHUB_PATH
 
       - name: Sync dependencies
