@@ -135,114 +135,23 @@ for (k, v) in v8_deps.items():
     solutions[0]['custom_deps']['libraries/v8/' + k] = v
 
 # ============================================================================
-# Hooks - run after sync
+# Hooks - run after sync (minimal set, using system Python)
+# ============================================================================
+# NOTE: We use simple hooks without 'cwd' to avoid Windows path issues.
+# Toolchain setup (clang, sysroot, etc.) is skipped - we use system tools.
 # ============================================================================
 hooks = [
-    # -------------------------------------------------------------------------
-    # ANGLE hooks (toolchain setup)
-    # -------------------------------------------------------------------------
+    # Create gclient_args.gni for V8
     {
-        'cwd': 'libraries/angle',
-        'name': 'win_toolchain',
-        'pattern': '.',
-        'condition': 'checkout_win',
-        'action': ['python3', 'build/vs_toolchain.py', 'update', '--force'],
-    },
-    {
-        'cwd': 'libraries/angle',
-        'name': 'clang',
-        'pattern': '.',
-        'action': ['python3', 'tools/clang/scripts/update.py'],
-    },
-    {
-        'cwd': 'libraries/angle',
-        'name': 'lastchange',
-        'pattern': '.',
-        'action': ['python3', 'build/util/lastchange.py', '-o', 'build/util/LASTCHANGE'],
-    },
-    {
-        'cwd': 'libraries/angle',
-        'name': 'rc_win',
-        'pattern': '.',
-        'condition': 'checkout_win',
-        'action': [
-            'python3', '../depot_tools/download_from_google_storage.py',
-            '--no_resume', '--no_auth',
-            '--bucket', 'chromium-browser-clang/rc',
-            '-s', 'build/toolchain/win/rc/win/rc.exe.sha1',
-        ],
-    },
-    {
-        'cwd': 'libraries/angle',
-        'name': 'sysroot_x64',
-        'pattern': '.',
-        'condition': 'checkout_linux',
-        'action': ['python3', 'build/linux/sysroot_scripts/install-sysroot.py', '--arch=x64'],
-    },
-
-    # -------------------------------------------------------------------------
-    # V8 hooks (toolchain setup)
-    # -------------------------------------------------------------------------
-    {
-        'name': 'lastchange',
-        'cwd': 'libraries/v8',
-        'pattern': '.',
-        'action': ['python3', 'build/util/lastchange.py', '-o', 'build/util/LASTCHANGE'],
-    },
-    {
-        'name': 'sysroot_x64',
-        'cwd': 'libraries/v8',
-        'pattern': '.',
-        'condition': 'checkout_linux and checkout_x64',
-        'action': ['python3', 'build/linux/sysroot_scripts/install-sysroot.py', '--arch=x64'],
-    },
-    {
-        'name': 'win_toolchain',
-        'cwd': 'libraries/v8',
-        'pattern': '.',
-        'condition': 'checkout_win',
-        'action': ['python3', 'build/vs_toolchain.py', 'update', '--force'],
-    },
-    {
-        'name': 'mac_toolchain',
-        'cwd': 'libraries/v8',
-        'pattern': '.',
-        'condition': 'checkout_mac',
-        'action': ['python3', 'build/mac_toolchain.py'],
-    },
-    {
-        'name': 'clang',
-        'cwd': 'libraries/v8',
-        'pattern': '.',
-        'condition': 'host_os != "aix"',
-        'action': ['python3', 'tools/clang/scripts/update.py'],
-    },
-
-    # -------------------------------------------------------------------------
-    # V8 build configuration
-    # -------------------------------------------------------------------------
-    {
+        "name": "v8_build_config",
+        "pattern": ".",
         "action": ["python3", "libraries/v8_build.py"],
     },
 
-    # -------------------------------------------------------------------------
-    # ANGLE build configuration
-    # -------------------------------------------------------------------------
+    # Create gclient_args.gni for ANGLE
     {
+        "name": "angle_build_config",
+        "pattern": ".",
         "action": ["python3", "libraries/angle_build.py"],
     },
-
-    # =========================================================================
-    # PATCHES REMOVED FOR 2025 DYNAMIC LINKING BUILD
-    # =========================================================================
-    # The following patches were previously applied but are NOT NEEDED for
-    # dynamic linking builds. See PATCH_ANALYSIS.md for details.
-    #
-    # For STATIC builds, apply patches manually from libraries/patches/:
-    #   - glfw.patch: Static EGL linking, Win32 fiber messaging
-    #   - v8.patch: Compiler warning fixes (likely not needed)
-    #   - v8_build.patch: C++20 deprecation warnings (Windows only)
-    #   - skia.patch: ANGLE static linking, CFI disable
-    #   - angle.patch: Static lib config, macOS vsync, D3D11 fixes
-    # =========================================================================
 ]
