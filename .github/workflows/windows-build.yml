@@ -1,20 +1,20 @@
-name: Windows build
+name: Windows build (2025)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'claude/**' ]
     paths-ignore:
-      - '.github/**'
       - 'docs/**'
       - 'examples/**'
       - 'types/**'
+      - '**.md'
   pull_request:
     branches: [ main ]
     paths-ignore:
-      - '.github/**'
       - 'docs/**'
       - 'examples/**'
       - 'types/**'
+      - '**.md'
   release:
     types: [published]
 
@@ -33,37 +33,50 @@ jobs:
           git config --global core.eol lf
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install packages
-        run: choco install upx
+        run: choco install upx ninja
 
-      - name: Cache
+      - name: Cache libraries
         id: cache-libraries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             libraries/angle/include
-            libraries/angle/out/Release/obj/libEGL_static.lib
+            libraries/angle/out
             libraries/depot_tools
             libraries/gn
             libraries/glfw
             libraries/ninja
             libraries/skia/include
             libraries/skia/modules
-            libraries/skia/out/Release/skia.lib
+            libraries/skia/out
             libraries/v8/include
             libraries/v8/src
             libraries/v8/third_party/zlib
-            libraries/v8/out/Release/obj/v8_monolith.lib
+            libraries/v8/out
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-v3-${{ hashFiles('.gclient', 'libraries/build_skia.bat', 'libraries/skia-args-windows.gn', 'libraries/skia.patch', 'libraries/build_v8.bat', 'libraries/v8-args-windows.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.bat', 'libraries/angle-args-windows.gn', 'libraries/angle.patch') }}
+          key: windows-2025-v1-${{ hashFiles('.gclient', 'libraries/*-args-windows.gn', 'libraries/build_*.bat') }}
 
-      - name: Sync
+      - name: Setup build environment
+        run: |
+          libraries/setup_build_env.ps1
+          echo "$env:GITHUB_WORKSPACE/libraries/depot_tools" >> $env:GITHUB_PATH
+          echo "$env:GITHUB_WORKSPACE/libraries/gn/out" >> $env:GITHUB_PATH
+          echo "$env:GITHUB_WORKSPACE/libraries/ninja" >> $env:GITHUB_PATH
+
+      - name: Sync dependencies
         if: steps.cache-libraries.outputs.cache-hit != 'true'
         run: |
           libraries/setup_build_env.ps1
           libraries/sync.ps1
+
+      - name: Build V8
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          libraries/setup_build_env.ps1
+          libraries/build_v8.bat
 
       - name: Build Skia
         if: steps.cache-libraries.outputs.cache-hit != 'true'
@@ -77,47 +90,39 @@ jobs:
           libraries/setup_build_env.ps1
           libraries/build_angle.bat
 
-      - name: Build v8
-        if: steps.cache-libraries.outputs.cache-hit != 'true'
+      - name: Build Window.js (Release)
         run: |
           libraries/setup_build_env.ps1
-          libraries/build_v8.bat
+          cmake -S . -B out/Release -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build out/Release --target windowjs --target windowjs-p5
 
-      - name: Release build
+      - name: Build Window.js (Debug)
         run: |
           libraries/setup_build_env.ps1
-          # Note: not passing LLVM_DIR; this config builds with MSVC.
-          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
-          cmake --build out -t windowjs -t windowjs-p5
+          cmake -S . -B out/Debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
+          cmake --build out/Debug --target windowjs --target windowjs-p5
 
-      - name: Debug build
+      - name: Run tests
         run: |
-          libraries/setup_build_env.ps1
-          # Note: not passing LLVM_DIR; this config builds with MSVC.
-          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
-          cmake --build out-debug -t windowjs -t windowjs-p5
-
-      - name: Tests
-        run: |
-          # Note: run tests in Debug to have more assertions.
+          # Run tests in Debug for more assertions
           # Note: run tests in Debug on Windows because Release builds
           # don't have a console, and so their exit code is always 0;
           # that would prevent test failures from making the workflow fail.
-          out-debug/windowjs.exe tests/run_tests.js
+          $env:PATH = "$env:GITHUB_WORKSPACE/libraries/v8/out/Release;$env:GITHUB_WORKSPACE/libraries/skia/out/Release;$env:GITHUB_WORKSPACE/libraries/angle/out/Release;$env:PATH"
+          out/Debug/windowjs.exe tests/run_tests.js
+
+      - name: Bundle for distribution
+        run: |
+          .\scripts\bundle_windows.bat Release
 
       - name: Binary size
         run: |
-          Write-Host "Size after build:"
-          Write-Host((Get-Item out/windowjs.exe).length)
-          upx -9 out/windowjs.exe
-          upx -9 out/windowjs-p5.exe
-          Write-Host "Size after upx:"
-          Write-Host((Get-Item out/windowjs.exe).length)
+          Write-Host "=== Release build sizes ==="
+          Get-ChildItem out/Release/windowjs.exe | Select-Object Length
+          Get-ChildItem out/Release/windowjs-win-x64/ -Recurse | Measure-Object -Property Length -Sum
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: windowjs.exe
-          path: |
-            out/windowjs.exe
-            out/windowjs-p5.exe
+          name: windowjs-win-x64
+          path: out/Release/windowjs-win-x64/

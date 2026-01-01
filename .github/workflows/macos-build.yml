@@ -1,22 +1,20 @@
-name: macOS build
+name: macOS build (2025)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'claude/**' ]
     paths-ignore:
-      - '.github/**'
       - 'docs/**'
       - 'examples/**'
-      - 'tests/**'
       - 'types/**'
+      - '**.md'
   pull_request:
     branches: [ main ]
     paths-ignore:
-      - '.github/**'
       - 'docs/**'
       - 'examples/**'
-      - 'tests/**'
       - 'types/**'
+      - '**.md'
   release:
     types: [published]
 
@@ -25,41 +23,55 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-14
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install packages
-        run: brew install upx
+        run: |
+          brew install ninja upx
 
-      - name: Cache
+      - name: Cache libraries
         id: cache-libraries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             libraries/angle/include
-            libraries/angle/out/Release/obj/libEGL_static.a
+            libraries/angle/out
             libraries/depot_tools
             libraries/gn
             libraries/glfw
             libraries/ninja
             libraries/skia/include
             libraries/skia/modules
-            libraries/skia/out/Release/libskia.a
+            libraries/skia/out
             libraries/v8/include
             libraries/v8/src
             libraries/v8/third_party/zlib
-            libraries/v8/out/Release/obj/libv8_monolith.a
+            libraries/v8/out
             libraries/libuv
-          key: ${{ runner.os }}-build-cache-v3-${{ hashFiles('.gclient', 'libraries/build_skia.sh', 'libraries/skia-args-mac.gn', 'libraries/skia.patch', 'libraries/build_v8.sh', 'libraries/v8-args-mac.gn', 'libraries/v8.patch', 'libraries/glfw.patch', 'libraries/build_angle.sh', 'libraries/angle-args-mac.gn', 'libraries/angle.patch') }}
+          key: macos-2025-v1-${{ hashFiles('.gclient', 'libraries/*-args-mac.gn', 'libraries/build_*.sh') }}
 
-      - name: Sync
+      - name: Setup build environment
+        run: |
+          source libraries/setup_build_env.sh
+          echo "$PWD/libraries/depot_tools" >> $GITHUB_PATH
+          echo "$PWD/libraries/gn/out" >> $GITHUB_PATH
+          echo "$PWD/libraries/ninja" >> $GITHUB_PATH
+
+      - name: Sync dependencies
         if: steps.cache-libraries.outputs.cache-hit != 'true'
         run: |
           source libraries/setup_build_env.sh
           libraries/sync.sh
+
+      - name: Build V8
+        if: steps.cache-libraries.outputs.cache-hit != 'true'
+        run: |
+          source libraries/setup_build_env.sh
+          libraries/build_v8.sh
 
       - name: Build Skia
         if: steps.cache-libraries.outputs.cache-hit != 'true'
@@ -73,47 +85,40 @@ jobs:
           source libraries/setup_build_env.sh
           libraries/build_angle.sh
 
-      - name: Build v8
-        if: steps.cache-libraries.outputs.cache-hit != 'true'
+      - name: Build Window.js (Release)
         run: |
           source libraries/setup_build_env.sh
-          libraries/build_v8.sh
+          cmake -S . -B out/Release -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build out/Release --target windowjs --target windowjs-p5
 
-      - name: Release build
+      - name: Build Window.js (Debug)
         run: |
           source libraries/setup_build_env.sh
-          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
-          cmake --build out -t windowjs -t windowjs-p5
-          strip out/windowjs
-          strip out/windowjs-p5
+          cmake -S . -B out/Debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
+          cmake --build out/Debug --target windowjs --target windowjs-p5
 
-# Tests are disabled in the macOS workflow because GLFW fails to initialize:
+# Tests are disabled in the macOS workflow because GLFW fails to initialize in CI:
 # https://github.com/windowjs/windowjs/issues/64
 #
-#      - name: Debug build
+#      - name: Run tests
 #        run: |
-#          source libraries/setup_build_env.sh
-#          cmake -S. -B out-debug -DCMAKE_BUILD_TYPE=Debug -G Ninja
-#          cmake --build out-debug -t windowjs -t windowjs-p5
-#
-#      - name: Tests
-#        run: |
-#          # Note: run tests in Debug to have more assertions.
-#          out-debug/windowjs tests/run_tests.js
+#          # Run tests in Debug for more assertions
+#          export DYLD_LIBRARY_PATH="$PWD/libraries/v8/out/Release:$PWD/libraries/skia/out/Release:$PWD/libraries/angle/out/Release:$DYLD_LIBRARY_PATH"
+#          out/Debug/windowjs tests/run_tests.js
+
+      - name: Bundle for distribution
+        run: |
+          chmod +x scripts/bundle_macos.sh
+          ./scripts/bundle_macos.sh Release
 
       - name: Binary size
         run: |
-          echo "Binary size after build:"
-          stat -f%z out/windowjs
-          upx -9 out/windowjs
-          upx -9 out/windowjs-p5
-          echo "Binary size after upx:"
-          stat -f%z out/windowjs
+          echo "=== Release build sizes ==="
+          du -h out/Release/windowjs
+          du -h out/Release/WindowJS.app/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: windowjs
-          path: |
-            out/windowjs
-            out/windowjs-p5
+          name: windowjs-macos-arm64
+          path: out/Release/WindowJS.app/
