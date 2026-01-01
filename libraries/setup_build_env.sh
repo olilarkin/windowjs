@@ -71,72 +71,94 @@ if [ $? -ne 0 ]; then
 fi
 
 
-if [ ! -d "libraries/ninja" ]; then
+# Check if ninja is already available in PATH (e.g., installed via package manager)
+if command -v ninja >/dev/null 2>&1; then
   echo
-  echo "Checking out the ninja build tool"
-  echo
-  git clone https://github.com/ninja-build/ninja libraries/ninja
-  if [ $? -ne 0 ]; then
+  echo "Using system ninja: $(which ninja)"
+  ninja --version
+else
+  if [ ! -d "libraries/ninja" ]; then
+    echo
+    echo "Checking out the ninja build tool"
+    echo
+    git clone https://github.com/ninja-build/ninja libraries/ninja
+    if [ $? -ne 0 ]; then
+      echo
+      echo FAILED
+      return 1
+    fi
+  fi
+
+  if [ ! -f "libraries/ninja/ninja" ]; then
+    echo
+    echo "Building the ninja build tool"
+    echo
+    pushd libraries/ninja
+    python3 configure.py --bootstrap
+    popd
+  fi
+
+  if [ ! -f "libraries/ninja/ninja" ]; then
+    echo
+    echo "Ninja build failed."
     echo
     echo FAILED
     return 1
   fi
 fi
 
-if [ ! -f "libraries/ninja/ninja" ]; then
-  echo
-  echo "Building the ninja build tool"
-  echo
-  pushd libraries/ninja
-  "${depot_tools}/vpython" configure.py --bootstrap
-  popd
-fi
 
-if [ ! -f "libraries/ninja/ninja" ]; then
+# Check if gn is already available in PATH (e.g., installed via package manager)
+if command -v gn >/dev/null 2>&1; then
   echo
-  echo "Ninja build failed."
-  echo
-  echo FAILED
-  return 1
-fi
+  echo "Using system gn: $(which gn)"
+  gn --version
+else
+  if [ ! -d "libraries/gn" ]; then
+    echo
+    echo "Checking out the gn build tool"
+    echo
+    git clone https://gn.googlesource.com/gn libraries/gn
+    if [ $? -ne 0 ]; then
+      echo
+      echo FAILED
+      return 1
+    fi
+  fi
 
+  if [ ! -f "libraries/gn/out/gn" ]; then
+    echo
+    echo "Building the gn build tool"
+    echo
+    pushd libraries/gn
+    python3 build/gen.py
+    ninja -C out gn
+    popd
+  fi
 
-if [ ! -d "libraries/gn" ]; then
-  echo
-  echo "Checking out the gn build tool"
-  echo
-  git clone https://gn.googlesource.com/gn libraries/gn
-  if [ $? -ne 0 ]; then
+  if [ ! -f "libraries/gn/out/gn" ]; then
+    echo
+    echo "GN build failed."
     echo
     echo FAILED
     return 1
   fi
 fi
 
-if [ ! -f "libraries/gn/out/gn" ]; then
-  echo
-  echo "Building the gn build tool"
-  echo
-  pushd libraries/gn
-  "${depot_tools}/vpython" build/gen.py
-  "${depot_tools}/../ninja/ninja" -C out gn
-  popd
-fi
-
-if [ ! -f "libraries/gn/out/gn" ]; then
-  echo
-  echo "GN build failed."
-  echo
-  echo FAILED
-  return 1
-fi
-
 
 echo
-echo "Updating PATH to use depot_tools and gn"
+echo "Updating PATH to use depot_tools, gn, and ninja"
 echo
 
-export PATH=`"${depot_tools}/vpython" libraries/update_path.py "$PWD"`
+# Add local builds to PATH if they exist
+if [ -f "libraries/gn/out/gn" ]; then
+  export PATH="$PWD/libraries/gn/out:$PATH"
+fi
+if [ -f "libraries/ninja/ninja" ]; then
+  export PATH="$PWD/libraries/ninja:$PATH"
+fi
+export PATH="${depot_tools}:$PATH"
+
 # Forgets all remembered locations:
 hash -r
 

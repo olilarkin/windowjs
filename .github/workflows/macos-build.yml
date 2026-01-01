@@ -31,7 +31,7 @@ jobs:
 
       - name: Install packages
         run: |
-          brew install ninja upx
+          brew install ninja gn upx
 
       - name: Cache libraries
         id: cache-libraries
