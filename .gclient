@@ -139,6 +139,9 @@ hooks = [
     "action": ["git", "apply", "--directory", "libraries/skia", "libraries/skia.patch"],
   },
   {
+    "action": ["python3", "libraries/skia_libpng_fix.py"],
+  },
+  {
     "action": ["git", "apply", "--directory", "libraries/angle", "libraries/angle.patch"],
   },
   {
