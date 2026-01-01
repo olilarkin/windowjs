@@ -33,7 +33,7 @@ jobs:
 
       - name: Install packages
         run: |
-          brew install upx libpng pkg-config
+          brew install libpng pkg-config
           pip3 install --break-system-packages setuptools
           echo "PKG_CONFIG_PATH=/opt/homebrew/lib/pkgconfig" >> $GITHUB_ENV
 
@@ -106,12 +106,9 @@ jobs:
 
       - name: Binary size
         run: |
-          echo "Binary size after build:"
+          echo "Binary size:"
           stat -f%z out/windowjs
-          upx -9 out/windowjs
-          upx -9 out/windowjs-p5
-          echo "Binary size after upx:"
-          stat -f%z out/windowjs
+          stat -f%z out/windowjs-p5
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
