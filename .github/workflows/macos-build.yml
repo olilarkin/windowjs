@@ -33,8 +33,9 @@ jobs:
 
       - name: Install packages
         run: |
-          brew install upx libpng
+          brew install upx libpng pkg-config
           pip3 install --break-system-packages setuptools
+          echo "PKG_CONFIG_PATH=/opt/homebrew/lib/pkgconfig" >> $GITHUB_ENV
 
       - name: Cache
         id: cache-libraries
