@@ -33,7 +33,7 @@ jobs:
 
       - name: Install packages
         run: |
-          brew install upx
+          brew install upx libpng
           pip3 install --break-system-packages setuptools
 
       - name: Cache
