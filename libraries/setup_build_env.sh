@@ -108,56 +108,22 @@ else
 fi
 
 
-# Check if gn is already available in PATH (e.g., installed via package manager)
-if command -v gn >/dev/null 2>&1; then
-  echo
-  echo "Using system gn: $(which gn)"
-  gn --version
-else
-  if [ ! -d "libraries/gn" ]; then
-    echo
-    echo "Checking out the gn build tool"
-    echo
-    git clone https://gn.googlesource.com/gn libraries/gn
-    if [ $? -ne 0 ]; then
-      echo
-      echo FAILED
-      return 1
-    fi
-  fi
-
-  if [ ! -f "libraries/gn/out/gn" ]; then
-    echo
-    echo "Building the gn build tool"
-    echo
-    pushd libraries/gn
-    python3 build/gen.py --no-last-commit-position
-    ninja -C out gn
-    popd
-  fi
-
-  if [ ! -f "libraries/gn/out/gn" ]; then
-    echo
-    echo "GN build failed."
-    echo
-    echo FAILED
-    return 1
-  fi
-fi
-
-
+# Use gn from depot_tools (it downloads pre-built binaries automatically)
+# No need to build from source - depot_tools handles this
 echo
-echo "Updating PATH to use depot_tools, gn, and ninja"
+echo "Updating PATH to use depot_tools and ninja"
 echo
 
-# Add local builds to PATH if they exist
-if [ -f "libraries/gn/out/gn" ]; then
-  export PATH="$PWD/libraries/gn/out:$PATH"
-fi
+# Add local ninja to PATH if built from source
 if [ -f "libraries/ninja/ninja" ]; then
   export PATH="$PWD/libraries/ninja:$PATH"
 fi
+# depot_tools provides gn, gclient, and other tools
 export PATH="${depot_tools}:$PATH"
+
+# Ensure depot_tools downloads gn binary
+echo "Ensuring gn is available from depot_tools..."
+"${depot_tools}/gn" --version
 
 # Forgets all remembered locations:
 hash -r

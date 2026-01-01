@@ -116,49 +116,21 @@ if ($ninjaCmd) {
 }
 
 
-# Check if gn is already available in PATH (e.g., installed via package manager)
-$gnCmd = Get-Command gn -ErrorAction SilentlyContinue
-if ($gnCmd) {
-  Write-Host ""
-  Write-Host "Using system gn: $($gnCmd.Source)"
-  gn --version
-} else {
-  if (-not(Test-Path -Path 'libraries\gn' -PathType Container)) {
-    Write-Host ""
-    Write-Host "Checking out the gn build tool"
-    Write-Host ""
-    git clone https://gn.googlesource.com/gn libraries\gn
-  }
-
-  if (-not(Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf)) {
-    Write-Host ""
-    Write-Host "Building the gn build tool"
-    Write-Host ""
-    pushd libraries\gn
-    try {
-      python build/gen.py --no-last-commit-position
-      ninja -C out gn.exe
-      popd
-    } catch {
-      Write-Host ""
-      Write-Host "GN build failed."
-      Write-Host ""
-      Write-Host "FAILED"
-      exit 1
-    }
-  }
-}
-
+# Use gn from depot_tools (it downloads pre-built binaries automatically)
+# No need to build from source - depot_tools handles this
 Write-Host ""
-Write-Host "Updating PATH to use depot_tools, gn, and ninja"
-# Add local builds to PATH if they exist
-if (Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf) {
-  $env:path = "$(pwd)\libraries\gn\out;$env:path"
-}
+Write-Host "Updating PATH to use depot_tools and ninja"
+
+# Add local ninja to PATH if built from source
 if (Test-Path -Path 'libraries\ninja\ninja.exe' -PathType Leaf) {
   $env:path = "$(pwd)\libraries\ninja;$env:path"
 }
+# depot_tools provides gn, gclient, and other tools
 $env:path = "${depot_tools};$env:path"
+
+# Ensure depot_tools downloads gn binary
+Write-Host "Ensuring gn is available from depot_tools..."
+Invoke-Expression "${depot_tools}/gn.bat --version"
 
 Write-Host ""
 Write-Host "Verifying gn and ninja in PATH"
