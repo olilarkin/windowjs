@@ -88,7 +88,7 @@ if [ ! -f "libraries/ninja/ninja" ]; then
   echo "Building the ninja build tool"
   echo
   pushd libraries/ninja
-  "${depot_tools}/vpython" configure.py --bootstrap
+  "${depot_tools}/vpython3" configure.py --bootstrap
   popd
 fi
 
@@ -118,7 +118,7 @@ if [ ! -f "libraries/gn/out/gn" ]; then
   echo "Building the gn build tool"
   echo
   pushd libraries/gn
-  "${depot_tools}/vpython" build/gen.py
+  "${depot_tools}/vpython3" build/gen.py
   "${depot_tools}/../ninja/ninja" -C out gn
   popd
 fi
@@ -136,7 +136,7 @@ echo
 echo "Updating PATH to use depot_tools and gn"
 echo
 
-export PATH=`"${depot_tools}/vpython" libraries/update_path.py "$PWD"`
+export PATH=`"${depot_tools}/vpython3" libraries/update_path.py "$PWD"`
 # Forgets all remembered locations:
 hash -r
 
