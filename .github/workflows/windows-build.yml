@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install packages
-        run: choco install upx ninja gn
+        run: choco install upx ninja
 
       - name: Cache libraries
         id: cache-libraries
