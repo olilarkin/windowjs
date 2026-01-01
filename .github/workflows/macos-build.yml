@@ -85,7 +85,7 @@ jobs:
       - name: Release build
         run: |
           source libraries/setup_build_env.sh
-          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -G Ninja
           cmake --build out -t windowjs -t windowjs-p5
           strip out/windowjs
           strip out/windowjs-p5
