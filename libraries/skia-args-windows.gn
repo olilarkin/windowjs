@@ -1,32 +1,39 @@
-is_official_build = true
-is_component_build = false
+# Skia Windows component build configuration (2025)
+# Builds Skia as a DLL for faster development iteration
+
+# Component build for DLL output
+is_official_build = false  # Required for component builds
+is_component_build = true
 is_debug = false
 
+# Graphics backend configuration
 skia_use_egl = true
 skia_gl_standard = "gles"
 
-clang_win = "../../../v8/third_party/llvm-build/Release+Asserts"
-clang_win_version = "17"
+# Use MSVC for Windows DLL compatibility
+is_clang = false
 
+# Disable unused features
 skia_enable_android_utils = false
-skia_enable_skvm_jit_when_possible = false
 skia_enable_tools = false
 skia_enable_gpu_debug_layers = false
 skia_use_libheif = false
 skia_use_lua = false
 skia_use_expat = false
 skia_use_xps = false
-
-# skia_use_system_expat = false
-# skia_use_system_harfbuzz = false
-# skia_use_system_icu = false
-skia_use_system_libjpeg_turbo = false
-skia_use_system_libpng = false
-skia_use_system_libwebp = false
-skia_use_system_zlib = false
+skia_use_dng_sdk = false
 skia_enable_pdf = false
 skia_enable_skottie = false
 skia_enable_skparagraph = false
 skia_enable_skshaper = false
 skia_enable_svg = false
 skia_use_icu = false
+
+# Use bundled dependencies (no system libs on Windows)
+skia_use_system_libjpeg_turbo = false
+skia_use_system_libpng = false
+skia_use_system_libwebp = false
+skia_use_system_zlib = false
+
+# Visual Studio version
+visual_studio_version = "2022"

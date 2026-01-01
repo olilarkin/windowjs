@@ -1,31 +1,38 @@
-is_official_build = true
-is_component_build = false
+# Skia Linux component build configuration (2025)
+# Builds Skia as a shared library for faster development iteration
+
+# Component build for shared library output
+is_official_build = false  # Required for component builds
+is_component_build = true
 is_debug = false
 
+# Graphics backend configuration
 skia_use_egl = true
 skia_gl_standard = "gles"
 
+# Disable unused features
 skia_enable_android_utils = false
-skia_enable_skvm_jit_when_possible = false
 skia_enable_tools = false
 skia_enable_gpu_debug_layers = false
 skia_use_libheif = false
 skia_use_lua = false
-
-cc = "clang"
-cxx = "clang++"
-skia_use_system_expat = true
-skia_use_system_freetype2 = true
-#skia_use_system_harfbuzz = true
-#skia_use_system_icu = true
-skia_use_system_libjpeg_turbo = true
-skia_use_system_libpng = true
-skia_use_system_libwebp = true
-#skia_use_system_zlib = true
+skia_use_dng_sdk = false
 skia_enable_pdf = false
 skia_enable_skottie = false
 skia_enable_skparagraph = false
 skia_enable_skshaper = false
 skia_enable_svg = false
 skia_use_icu = false
-skia_use_dng_sdk = false
+
+# Compiler configuration
+is_clang = true
+cc = "clang"
+cxx = "clang++"
+
+# Use system libraries where available (Linux has good package management)
+skia_use_system_expat = true
+skia_use_system_freetype2 = true
+skia_use_system_libjpeg_turbo = true
+skia_use_system_libpng = true
+skia_use_system_libwebp = true
+skia_use_system_zlib = true

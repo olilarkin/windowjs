@@ -1,22 +1,37 @@
-is_component_build = false
-# target_cpu = "x64"
+# ANGLE macOS component build configuration (2025)
+# Builds ANGLE as shared libraries for faster development iteration
+
+# Component build for shared library output
+is_component_build = true
 is_debug = false
+
+# Assertions and checks
 angle_assert_always_on = false
 dcheck_always_on = false
 dcheck_is_configurable = false
+
+# Toolchain configuration
 use_custom_libcxx = false
 clang_use_chrome_plugins = false
-symbol_level = 0
+
+# Symbol level (0 = none, 1 = minimal, 2 = full)
+symbol_level = 1
+
+# Disable debug layers in release
 angle_build_vulkan_system_info = false
 angle_debug_layers_enabled = false
 
+# Use system Xcode
 use_system_xcode = true
 mac_allow_system_xcode_for_official_builds_for_testing = true
 
-# macOS-specific:
+# macOS graphics backend configuration
 angle_enable_d3d11 = false
 angle_enable_d3d9 = false
-angle_enable_gl = true
+angle_enable_gl = true          # OpenGL backend (primary)
 angle_enable_null = false
 angle_enable_vulkan = false
-angle_enable_metal = false
+angle_enable_metal = true       # Enable Metal backend for modern macOS
+
+# macOS deployment target
+mac_deployment_target = "11.0"

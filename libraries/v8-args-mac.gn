@@ -1,20 +1,37 @@
-is_component_build = false
+# V8 macOS component build configuration (2025)
+# Builds V8 as shared libraries for faster development iteration
+
+# Component build: outputs multiple .dylib files instead of monolithic static lib
+is_component_build = true
+v8_monolithic = false
+
 is_debug = false
-v8_monolithic = true
 
+# Let GN auto-detect target CPU (supports both x64 and arm64)
 # target_cpu = "x64"
-# v8_target_cpu="x64"
+# v8_target_cpu = "x64"
 
+# Debug features
 v8_enable_backtrace = true
 v8_enable_slow_dchecks = false
+
+# Disable sandbox (not needed for desktop apps)
 v8_enable_sandbox = false
 
-#is_clang = true
-#clang_base_path = "/usr"
-#clang_use_chrome_plugins = false
-#clang_version = "11.0.0"
+# Use system libc++ on macOS
 use_custom_libcxx = false
 
+# Disable i18n to reduce binary size (enable if needed)
 v8_enable_i18n_support = false
 
+# Embed startup data in the binary
 v8_use_external_startup_data = false
+
+# Pointer compression for memory efficiency
+v8_enable_pointer_compression = true
+
+# Use the system Xcode toolchain
+use_xcode_clang = true
+
+# Symbol level (0 = none, 1 = minimal, 2 = full)
+symbol_level = 1

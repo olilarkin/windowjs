@@ -1,18 +1,35 @@
-is_component_build = false
-target_cpu = "x64"
+# ANGLE Windows component build configuration (2025)
+# Builds ANGLE as DLLs for faster development iteration
+
+# Component build for DLL output
+is_component_build = true
 is_debug = false
+
+target_cpu = "x64"
+
+# Assertions and checks
 angle_assert_always_on = false
 dcheck_always_on = false
 dcheck_is_configurable = false
+
+# Toolchain configuration - use MSVC for Windows DLL compatibility
+is_clang = false
 use_custom_libcxx = false
 clang_use_chrome_plugins = false
-symbol_level = 0
+
+# Symbol level (0 = none, 1 = minimal, 2 = full)
+symbol_level = 1
+
+# Disable debug layers in release
 angle_build_vulkan_system_info = false
 angle_debug_layers_enabled = false
 
-# Windows-specific:
-angle_enable_d3d11 = true
+# Windows graphics backend configuration
+angle_enable_d3d11 = true       # Direct3D 11 (primary on Windows)
 angle_enable_d3d9 = false
-angle_enable_gl = false
+angle_enable_gl = false         # Not needed on Windows
 angle_enable_null = false
-angle_enable_vulkan = false
+angle_enable_vulkan = false     # Can enable for Vulkan support
+
+# Visual Studio version
+visual_studio_version = "2022"

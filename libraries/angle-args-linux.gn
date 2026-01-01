@@ -1,19 +1,34 @@
-is_component_build = false
-target_cpu = "x64"
+# ANGLE Linux component build configuration (2025)
+# Builds ANGLE as shared libraries for faster development iteration
+
+# Component build for shared library output
+is_component_build = true
 is_debug = false
+
+target_cpu = "x64"
+
+# Assertions and checks
 angle_assert_always_on = false
 dcheck_always_on = false
 dcheck_is_configurable = false
+
+# Toolchain configuration
 use_custom_libcxx = false
+use_sysroot = false
+is_clang = true
 clang_use_chrome_plugins = false
-symbol_level = 0
+
+# Symbol level (0 = none, 1 = minimal, 2 = full)
+symbol_level = 1
+
+# Disable debug layers in release
 angle_build_vulkan_system_info = false
 angle_debug_layers_enabled = false
 
-# Linux-specific:
+# Linux graphics backend configuration
 angle_enable_d3d11 = false
 angle_enable_d3d9 = false
-angle_enable_gl = true
+angle_enable_gl = true              # OpenGL backend
 angle_enable_gl_desktop_backend = true
 angle_enable_null = false
-angle_enable_vulkan = false
+angle_enable_vulkan = false         # Can enable for Vulkan support
