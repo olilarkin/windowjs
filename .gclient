@@ -4,6 +4,14 @@
 # All Chromium-based dependencies (V8, Skia, ANGLE) are aligned to Chrome M140
 # to avoid ABI conflicts in shared build infrastructure.
 #
+# DYNAMIC LINKING (default):
+#   No patches are required - libraries are built as shared libraries and
+#   link against each other dynamically, avoiding ABI conflicts.
+#
+# STATIC LINKING (optional for releases):
+#   See libraries/patches/ for patches needed when building static libraries.
+#   Apply patches manually before building with WINDOWJS_STATIC=ON.
+#
 # To sync dependencies:
 #   gclient sync --shallow --no-history -D -R --force
 #
@@ -131,7 +139,7 @@ for (k, v) in v8_deps.items():
 # ============================================================================
 hooks = [
     # -------------------------------------------------------------------------
-    # ANGLE hooks
+    # ANGLE hooks (toolchain setup)
     # -------------------------------------------------------------------------
     {
         'cwd': 'libraries/angle',
@@ -173,7 +181,7 @@ hooks = [
     },
 
     # -------------------------------------------------------------------------
-    # V8 hooks
+    # V8 hooks (toolchain setup)
     # -------------------------------------------------------------------------
     {
         'name': 'lastchange',
@@ -211,29 +219,30 @@ hooks = [
     },
 
     # -------------------------------------------------------------------------
-    # Window.js patches
-    # Note: These patches may need updating for 2025 dependency versions.
-    # Check if patches still apply cleanly after version updates.
+    # V8 build configuration
     # -------------------------------------------------------------------------
-    {
-        "action": ["git", "apply", "--directory", "libraries/glfw", "libraries/glfw.patch"],
-    },
-    {
-        "action": ["git", "apply", "--directory", "libraries/v8", "libraries/v8.patch"],
-    },
-    {
-        "action": ["git", "apply", "--directory", "libraries/v8/build", "libraries/v8_build.patch"],
-    },
     {
         "action": ["python3", "libraries/v8_build.py"],
     },
-    {
-        "action": ["git", "apply", "--directory", "libraries/skia", "libraries/skia.patch"],
-    },
-    {
-        "action": ["git", "apply", "--directory", "libraries/angle", "libraries/angle.patch"],
-    },
+
+    # -------------------------------------------------------------------------
+    # ANGLE build configuration
+    # -------------------------------------------------------------------------
     {
         "action": ["python3", "libraries/angle_build.py"],
     },
+
+    # =========================================================================
+    # PATCHES REMOVED FOR 2025 DYNAMIC LINKING BUILD
+    # =========================================================================
+    # The following patches were previously applied but are NOT NEEDED for
+    # dynamic linking builds. See PATCH_ANALYSIS.md for details.
+    #
+    # For STATIC builds, apply patches manually from libraries/patches/:
+    #   - glfw.patch: Static EGL linking, Win32 fiber messaging
+    #   - v8.patch: Compiler warning fixes (likely not needed)
+    #   - v8_build.patch: C++20 deprecation warnings (Windows only)
+    #   - skia.patch: ANGLE static linking, CFI disable
+    #   - angle.patch: Static lib config, macOS vsync, D3D11 fixes
+    # =========================================================================
 ]
