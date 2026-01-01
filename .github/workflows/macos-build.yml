@@ -34,7 +34,7 @@ jobs:
       - name: Install packages
         run: |
           brew install upx
-          pip3 install setuptools
+          pip3 install --break-system-packages setuptools
 
       - name: Cache
         id: cache-libraries
