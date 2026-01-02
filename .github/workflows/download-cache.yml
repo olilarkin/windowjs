@@ -1,0 +1,37 @@
+name: Download build cache as artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            libraries/angle/include
+            libraries/angle/out/Release/obj/libEGL_static.a
+            libraries/depot_tools
+            libraries/gn
+            libraries/glfw
+            libraries/ninja
+            libraries/skia/include
+            libraries/skia/modules
+            libraries/skia/out/Release/libskia.a
+            libraries/v8/include
+            libraries/v8/src
+            libraries/v8/third_party/zlib
+            libraries/v8/out/Release/obj/libv8_monolith.a
+            libraries/libuv
+          key: macOS-build-cache-v3-355249ec8665441a39b449644bd7084ed38e92cf91fec0b494bda3d77f9d99e5
+
+      - name: Upload as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-libraries
+          path: libraries/
+          compression-level: 0
