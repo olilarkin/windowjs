@@ -17,4 +17,7 @@ treat_warnings_as_errors = false
 
 v8_enable_i18n_support = false
 
+# Disable WebAssembly to avoid GCC 13 template instantiation errors with incomplete types
+v8_enable_webassembly = false
+
 v8_use_external_startup_data = false
