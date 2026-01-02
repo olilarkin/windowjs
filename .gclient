@@ -1,20 +1,15 @@
 vars = {
   'glfw_git': 'https://github.com/glfw/glfw.git',
-  # Tag 3.3.8. Using commit hash to support gclient --no-history.
-  'glfw_commit': '7482de6071d21db77a7236155da44c172a7f6c9e',
+  'glfw_commit': '7482de6071d21db77a7236155da44c172a7f6c9e',  # 3.3.8
 
-  # Update skia_deps below when the Skia version is updated.
   'skia_git': 'https://skia.googlesource.com/skia.git',
   'skia_commit': '9f561bc846d00e1e674987cc0f74ddd808c438f1',
 
-  # Update v8_deps below when the v8 version is updated.
   'v8_git': 'https://chromium.googlesource.com/v8/v8.git',
-  # Tag 11.3.81. Using commit hash to support gclient --no-history.
-  'v8_commit': 'a9f2a8e50aaf4e2f41ef38d3f3be3bf433c67973',
+  'v8_commit': 'a9f2a8e50aaf4e2f41ef38d3f3be3bf433c67973',  # 11.3.81
 
   'libuv_git': 'https://github.com/libuv/libuv.git',
-  # Tag v1.44.2. Using commit hash to support gclient --no-history.
-  'libuv_commit': '0c1fa696aa502eb749c2c4735005f41ba00a27b8',
+  'libuv_commit': '0c1fa696aa502eb749c2c4735005f41ba00a27b8',  # 1.44.2
 
   'angle_git': 'https://github.com/google/angle.git',
   'angle_commit': '51ddcabfd3abe64b392767828375ae688e5d4f3f',
@@ -22,7 +17,7 @@ vars = {
   'chromium_git': 'https://chromium.googlesource.com',
 }
 
-# ANGLE dependencies. Copied from libraries/angle/DEPS.
+# ANGLE dependencies
 angle_deps = {
   'build': 'https://chromium.googlesource.com/chromium/src/build.git@bdadc3003bd013080450432ed97e0afa30e50f2c',
   'testing': 'https://chromium.googlesource.com/chromium/src/testing@235da779448dadfb48ae6f503339066d56385dad',
@@ -39,8 +34,6 @@ angle_deps = {
   'third_party/zlib': 'https://chromium.googlesource.com/chromium/src/third_party/zlib@90e67ba3f8998a3532fc8e3db9539aada8060d43',
   'third_party/astc-encoder/src': 'https://chromium.googlesource.com/external/github.com/ARM-software/astc-encoder@573c475389bf51d16a5c3fc8348092e094e50e8f',
   'tools/clang': 'https://chromium.googlesource.com/chromium/src/tools/clang.git@64e9f9321c450d938fec79ef8e4431fd1a08f5ce',
-
-  # Copied from libraries/angle/third_party/vulkan-deps/DEPS.
   'third_party/vulkan-deps': 'https://chromium.googlesource.com/vulkan-deps@5d7ca659e80483a7bd85a0bf2ca615cdb8902f05',
   'third_party/vulkan-deps/glslang/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/glslang@9cdfc5a511e8fa9c0713a1c84503be74e7fae029',
   'third_party/vulkan-deps/spirv-cross/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/SPIRV-Cross@7512345f61e5f9b543ebb87df678f3fe7735587b',
@@ -52,25 +45,25 @@ angle_deps = {
   'third_party/vulkan-deps/vulkan-validation-layers/src': 'https://chromium.googlesource.com/external/github.com/KhronosGroup/Vulkan-ValidationLayers@b8eae8a7c87c837cbce9b49fdadc5ed3825e306d',
 }
 
-# Skia dependencies. Copied from libraries/skia/DEPS.
+# Skia dependencies
 skia_deps = {
-  "third_party/externals/expat"           : "https://chromium.googlesource.com/external/github.com/libexpat/libexpat.git@441f98d02deafd9b090aea568282b28f66a50e36",
-  "third_party/externals/libjpeg-turbo"   : "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@ed683925e4897a84b3bffc5c1414c85b97a129a3",
-  "third_party/externals/libpng"          : "https://skia.googlesource.com/third_party/libpng.git@386707c6d19b974ca2e3db7f5c61873813c6fe44",
-  "third_party/externals/libwebp"         : "https://chromium.googlesource.com/webm/libwebp.git@fd7b5d48464475408d32d2611bdb6947d4246b97",
-  "third_party/externals/wuffs"           : "https://skia.googlesource.com/external/github.com/google/wuffs-mirror-release-c.git@a0041ac0310b3156b963e2f2bea09245f25ec073",
-  "third_party/externals/zlib"            : "https://chromium.googlesource.com/chromium/src/third_party/zlib@c876c8f87101c5a75f6014b0f832499afeb65b73",
+  "third_party/externals/expat": "https://chromium.googlesource.com/external/github.com/libexpat/libexpat.git@441f98d02deafd9b090aea568282b28f66a50e36",
+  "third_party/externals/libjpeg-turbo": "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git@ed683925e4897a84b3bffc5c1414c85b97a129a3",
+  "third_party/externals/libpng": "https://skia.googlesource.com/third_party/libpng.git@386707c6d19b974ca2e3db7f5c61873813c6fe44",
+  "third_party/externals/libwebp": "https://chromium.googlesource.com/webm/libwebp.git@fd7b5d48464475408d32d2611bdb6947d4246b97",
+  "third_party/externals/wuffs": "https://skia.googlesource.com/external/github.com/google/wuffs-mirror-release-c.git@a0041ac0310b3156b963e2f2bea09245f25ec073",
+  "third_party/externals/zlib": "https://chromium.googlesource.com/chromium/src/third_party/zlib@c876c8f87101c5a75f6014b0f832499afeb65b73",
 }
 
-# v8 dependencies. Copied from libraries/v8/DEPS.
+# V8 dependencies
 v8_deps = {
-  'base/trace_event/common'                : 'https://chromium.googlesource.com/chromium/src/base/trace_event/common.git@147f65333c38ddd1ebf554e89965c243c8ce50b3',
-  'build'                                  : 'https://chromium.googlesource.com/chromium/src/build.git@ec8c8d82bdd61434e1e66c3f248200a900944ab0',
-  'third_party/googletest/src'             : 'https://chromium.googlesource.com/external/github.com/google/googletest.git@af29db7ec28d6df1c7f0f745186884091e602e07',
-  'third_party/jinja2'                     : 'https://chromium.googlesource.com/chromium/src/third_party/jinja2.git@264c07d7e64f2874434a3b8039e101ddf1b01e7e',
-  'third_party/markupsafe'                 : 'https://chromium.googlesource.com/chromium/src/third_party/markupsafe.git@13f4e8c9e206567eeb13bf585406ddc574005748',
-  'third_party/zlib'                       : 'https://chromium.googlesource.com/chromium/src/third_party/zlib.git@90e67ba3f8998a3532fc8e3db9539aada8060d43',
-  'tools/clang'                            : 'https://chromium.googlesource.com/chromium/src/tools/clang.git@697c297330684462bbbccb2bead783b0d94f6d50',
+  'base/trace_event/common': 'https://chromium.googlesource.com/chromium/src/base/trace_event/common.git@147f65333c38ddd1ebf554e89965c243c8ce50b3',
+  'build': 'https://chromium.googlesource.com/chromium/src/build.git@ec8c8d82bdd61434e1e66c3f248200a900944ab0',
+  'third_party/googletest/src': 'https://chromium.googlesource.com/external/github.com/google/googletest.git@af29db7ec28d6df1c7f0f745186884091e602e07',
+  'third_party/jinja2': 'https://chromium.googlesource.com/chromium/src/third_party/jinja2.git@264c07d7e64f2874434a3b8039e101ddf1b01e7e',
+  'third_party/markupsafe': 'https://chromium.googlesource.com/chromium/src/third_party/markupsafe.git@13f4e8c9e206567eeb13bf585406ddc574005748',
+  'third_party/zlib': 'https://chromium.googlesource.com/chromium/src/third_party/zlib.git@90e67ba3f8998a3532fc8e3db9539aada8060d43',
+  'tools/clang': 'https://chromium.googlesource.com/chromium/src/tools/clang.git@697c297330684462bbbccb2bead783b0d94f6d50',
 }
 
 solutions = [
@@ -88,6 +81,7 @@ solutions = [
   },
 ]
 
+# Add transitive dependencies
 for (k, v) in angle_deps.items():
   solutions[0]['custom_deps']['libraries/angle/' + k] = v
 
@@ -98,148 +92,59 @@ for (k, v) in v8_deps.items():
   solutions[0]['custom_deps']['libraries/v8/' + k] = v
 
 hooks = [
-  # From libraries/angle/DEPS:
-  {
-    'cwd': 'libraries/angle',
-    'name': 'win_toolchain',
-    'pattern': '.',
-    'condition': 'checkout_win',
-    'action': ['python3', 'build/vs_toolchain.py', 'update', '--force'],
-  },
+  # ANGLE hooks - macOS only
   {
     'cwd': 'libraries/angle',
     'name': 'clang',
     'pattern': '.',
+    'condition': 'host_os == "mac"',
     'action': ['python3', 'tools/clang/scripts/update.py'],
   },
   {
     'cwd': 'libraries/angle',
-    # Update LASTCHANGE.
     'name': 'lastchange',
     'pattern': '.',
-    'action': ['python3', 'build/util/lastchange.py',
-               '-o', 'build/util/LASTCHANGE'],
-  },
-  {
-    'cwd': 'libraries/angle',
-    'name': 'rc_win',
-    'pattern': '.',
-    'condition': 'checkout_win',
-    'action': [ 'python3',
-                '../depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--bucket', 'chromium-browser-clang/rc',
-                '-s', 'build/toolchain/win/rc/win/rc.exe.sha1',
-    ],
-  },
-  {
-    'cwd': 'libraries/angle',
-    'name': 'sysroot_x64',
-    'pattern': '.',
-    'condition': 'checkout_linux',
-    'action': ['python3', 'build/linux/sysroot_scripts/install-sysroot.py',
-               '--arch=x64'],
+    'action': ['python3', 'build/util/lastchange.py', '-o', 'build/util/LASTCHANGE'],
   },
 
-  # From libraries/v8/DEPS:
+  # V8 hooks
   {
-    # Update LASTCHANGE.
     'name': 'lastchange',
     'cwd': 'libraries/v8',
     'pattern': '.',
-    'action': ['python3', 'build/util/lastchange.py',
-               '-o', 'build/util/LASTCHANGE'],
+    'action': ['python3', 'build/util/lastchange.py', '-o', 'build/util/LASTCHANGE'],
   },
   {
-    'name': 'sysroot_x64',
-    'cwd': 'libraries/v8',
-    'pattern': '.',
-    'condition': 'checkout_linux and checkout_x64',
-    'action': ['python3', 'build/linux/sysroot_scripts/install-sysroot.py',
-               '--arch=x64'],
-  },
-  {
-    # Update the Windows toolchain if necessary.
-    'name': 'win_toolchain',
-    'cwd': 'libraries/v8',
-    'pattern': '.',
-    'condition': 'checkout_win',
-    'action': ['python3', 'build/vs_toolchain.py', 'update', '--force'],
-  },
-  {
-    # Update the Mac toolchain if necessary.
-    'name': 'mac_toolchain',
-    'cwd': 'libraries/v8',
-    'pattern': '.',
-    'condition': 'checkout_mac',
-    'action': ['python3', 'build/mac_toolchain.py'],
-  },
-  {
-    # Note: On Win, this should run after win_toolchain, as it may use it.
     'name': 'clang',
     'cwd': 'libraries/v8',
     'pattern': '.',
-    # clang not supported on aix
-    'condition': 'host_os != "aix"',
+    'condition': 'host_os == "mac"',
     'action': ['python3', 'tools/clang/scripts/update.py'],
   },
-  
+
+  # Apply patches
   {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
-      "libraries/glfw",
-      "libraries/glfw.patch",
-    ],
+    "action": ["git", "apply", "--directory", "libraries/glfw", "libraries/glfw.patch"],
   },
   {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
-      "libraries/v8",
-      "libraries/v8.patch",
-    ],
+    "action": ["git", "apply", "--directory", "libraries/v8", "libraries/v8.patch"],
   },
   {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
-      "libraries/v8/build",
-      "libraries/v8_build.patch",
-    ],
+    "action": ["git", "apply", "--directory", "libraries/v8/build", "libraries/v8_build.patch"],
   },
   {
-    "action": [
-      "python",
-      "libraries/v8_build.py",
-    ],
+    "action": ["python3", "libraries/v8_build.py"],
   },
   {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
-      "libraries/skia",
-      "libraries/skia.patch",
-    ],
+    "action": ["git", "apply", "--directory", "libraries/skia", "libraries/skia.patch"],
   },
   {
-    "action": [
-      "git",
-      "apply",
-      "--directory",
-      "libraries/angle",
-      "libraries/angle.patch",
-    ],
+    "action": ["python3", "libraries/skia_libpng_fix.py"],
   },
   {
-    "action": [
-      "python",
-      "libraries/angle_build.py",
-    ],
+    "action": ["git", "apply", "--directory", "libraries/angle", "libraries/angle.patch"],
+  },
+  {
+    "action": ["python3", "libraries/angle_build.py"],
   },
 ]
