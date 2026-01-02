@@ -30,7 +30,10 @@ if (-not($env:windowjs_visual_studio_ready -eq "1")) {
     $latestSdk = $sdkVersions[0].Name
     Write-Host "Using Windows SDK: $latestSdk"
 
-    cmd.exe /c "call `"$vcvarspath\VC\Auxiliary\Build\vcvars64.bat`" $latestSdk && set > %temp%\vcvars.txt"
+    # Set WindowsSDKVersion environment variable before calling vcvarsall
+    $env:WindowsSDKVersion = "$latestSdk\"
+    # Use -winsdk flag to specify SDK version explicitly
+    cmd.exe /c "call `"$vcvarspath\VC\Auxiliary\Build\vcvarsall.bat`" x64 -winsdk=$latestSdk && set > %temp%\vcvars.txt"
 
     Get-Content "$env:temp\vcvars.txt" | Foreach-Object {
       if ($_ -match "^(.*?)=(.*)$") {
