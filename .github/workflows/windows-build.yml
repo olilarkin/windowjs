@@ -41,8 +41,8 @@ jobs:
           # Download gn from official Google Cloud Storage
           Invoke-WebRequest -Uri "https://chrome-infra-packages.appspot.com/dl/gn/gn/windows-amd64/+/latest" -OutFile gn.zip
           Expand-Archive gn.zip -DestinationPath C:\gn
-          $env:Path = "C:\gn;$env:Path"
-          [Environment]::SetEnvironmentVariable("Path", "C:\gn;$env:Path", "Machine")
+          # Add to PATH for subsequent steps
+          "C:\gn" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Cache
         id: cache-libraries
