@@ -29,14 +29,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install packages
-        run: brew install upx
+        run: |
+          pip3 install --break-system-packages setuptools
+          brew install libpng pkg-config
+          echo "PKG_CONFIG_PATH=/opt/homebrew/lib/pkgconfig" >> $GITHUB_ENV
 
       - name: Cache
         id: cache-libraries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             libraries/angle/include
@@ -82,7 +85,7 @@ jobs:
       - name: Release build
         run: |
           source libraries/setup_build_env.sh
-          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake -S. -B out -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -G Ninja
           cmake --build out -t windowjs -t windowjs-p5
           strip out/windowjs
           strip out/windowjs-p5
@@ -105,13 +108,10 @@ jobs:
         run: |
           echo "Binary size after build:"
           stat -f%z out/windowjs
-          upx -9 out/windowjs
-          upx -9 out/windowjs-p5
-          echo "Binary size after upx:"
-          stat -f%z out/windowjs
+          stat -f%z out/windowjs-p5
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windowjs
           path: |

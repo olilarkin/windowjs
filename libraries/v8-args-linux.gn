@@ -9,12 +9,15 @@ v8_enable_backtrace = true
 v8_enable_slow_dchecks = false
 v8_enable_sandbox = false
 
-#is_clang = true
-#clang_base_path = "/usr"
-#clang_use_chrome_plugins = false
-#clang_version = "11.0.0"
+# Use system tools instead of Chrome's bundled ones
+use_sysroot = false
+is_clang = false
 use_custom_libcxx = false
+treat_warnings_as_errors = false
 
 v8_enable_i18n_support = false
+
+# Disable WebAssembly to avoid GCC 13 template instantiation errors with incomplete types
+v8_enable_webassembly = false
 
 v8_use_external_startup_data = false
