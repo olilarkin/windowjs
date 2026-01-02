@@ -34,7 +34,7 @@ jobs:
       - name: Install packages
         run: |
           sudo apt-get update
-          sudo apt-get install cmake gcc g++ libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev upx re2c
+          sudo apt-get install cmake gcc g++ libfontconfig-dev libjpeg-turbo8-dev libwebp-dev libgl-dev libglx-dev libxrandr-dev xorg-dev upx re2c libglib2.0-dev
 
       - name: Cache
         id: cache-libraries
