@@ -158,7 +158,13 @@ if ($systemGn) {
 
 Write-Host ""
 Write-Host "Updating PATH to use depot_tools and gn"
-$env:path = Invoke-Expression "${depot_tools}/python.bat libraries\update_path.py $(pwd)"
+# Only run update_path.py if we built local gn/ninja (not using system tools)
+if (-not $systemGn -or -not $systemNinja) {
+  $env:path = Invoke-Expression "${depot_tools}\python.bat libraries\update_path.py $(pwd)"
+} else {
+  # Just ensure depot_tools is in PATH for gclient
+  $env:path = "${depot_tools};$env:path"
+}
 
 Write-Host ""
 Write-Host "Verifying gn and ninja in PATH"
