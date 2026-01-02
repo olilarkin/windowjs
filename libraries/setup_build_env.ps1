@@ -32,13 +32,23 @@ if (-not($env:windowjs_visual_studio_ready -eq "1")) {
 
     # Set WindowsSDKVersion environment variable before calling vcvarsall
     $env:WindowsSDKVersion = "$latestSdk\"
-    # Use -winsdk flag to specify SDK version explicitly
-    cmd.exe /c "call `"$vcvarspath\VC\Auxiliary\Build\vcvarsall.bat`" x64 -winsdk=$latestSdk && set > %temp%\vcvars.txt"
+    # Call vcvarsall with SDK version as positional argument
+    cmd.exe /c "call `"$vcvarspath\VC\Auxiliary\Build\vcvarsall.bat`" x64 $latestSdk && set > %temp%\vcvars.txt"
 
     Get-Content "$env:temp\vcvars.txt" | Foreach-Object {
       if ($_ -match "^(.*?)=(.*)$") {
         Set-Content "env:\$($matches[1])" $matches[2]
       }
+    }
+
+    # Patch INCLUDE and LIB to use the correct SDK version if vcvarsall picked a different one
+    $sdkPattern = "10\.0\.\d+\.\d+"
+    if ($env:INCLUDE -match $sdkPattern -and $env:INCLUDE -notmatch [regex]::Escape($latestSdk)) {
+      $oldSdk = [regex]::Match($env:INCLUDE, $sdkPattern).Value
+      Write-Host "Patching SDK version in environment: $oldSdk -> $latestSdk"
+      $env:INCLUDE = $env:INCLUDE -replace [regex]::Escape($oldSdk), $latestSdk
+      $env:LIB = $env:LIB -replace [regex]::Escape($oldSdk), $latestSdk
+      $env:LIBPATH = $env:LIBPATH -replace [regex]::Escape($oldSdk), $latestSdk
     }
   } catch {
     Write-Host ""
