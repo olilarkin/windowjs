@@ -117,34 +117,42 @@ if ($systemNinja) {
 }
 
 
-if (-not(Test-Path -Path 'libraries\gn' -PathType Container)) {
+# Check if gn is already available in PATH (e.g., installed via package manager)
+$systemGn = Get-Command gn -ErrorAction SilentlyContinue
+if ($systemGn) {
   Write-Host ""
-  Write-Host "Checking out the gn build tool"
+  Write-Host "Using system gn: $($systemGn.Source)"
   Write-Host ""
-  git clone https://gn.googlesource.com/gn libraries\gn
-}
+} else {
+  if (-not(Test-Path -Path 'libraries\gn' -PathType Container)) {
+    Write-Host ""
+    Write-Host "Checking out the gn build tool"
+    Write-Host ""
+    git clone https://gn.googlesource.com/gn libraries\gn
+  }
 
 
-if (-not(Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf)) {
-  Write-Host ""
-  Write-Host "Building the gn build tool"
-  Write-Host ""
-  pushd libraries\gn
-  try {
-    Invoke-Expression "${depot_tools}/python.bat build/gen.py"
-    # Use system ninja if available, otherwise use local build
-    if ($systemNinja) {
-      ninja -C out gn.exe
-    } else {
-      Invoke-Expression "${depot_tools}/../ninja/ninja.exe -C out gn.exe"
+  if (-not(Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf)) {
+    Write-Host ""
+    Write-Host "Building the gn build tool"
+    Write-Host ""
+    pushd libraries\gn
+    try {
+      Invoke-Expression "${depot_tools}/python.bat build/gen.py"
+      # Use system ninja if available, otherwise use local build
+      if ($systemNinja) {
+        ninja -C out gn.exe
+      } else {
+        Invoke-Expression "${depot_tools}/../ninja/ninja.exe -C out gn.exe"
+      }
+      popd
+    } catch {
+      Write-Host ""
+      Write-Host "GN build failed."
+      Write-Host ""
+      Write-Host "FAILED"
+      exit 1
     }
-    popd
-  } catch {
-    Write-Host ""
-    Write-Host "GN build failed."
-    Write-Host ""
-    Write-Host "FAILED"
-    exit 1
   }
 }
 
