@@ -13,6 +13,9 @@ angle_debug_layers_enabled = false
 # Use system sysroot instead of Chrome's bundled one
 use_sysroot = false
 
+# Use GCC to avoid Chrome's bundled clang version requirements
+is_clang = false
+
 # Linux-specific:
 angle_enable_d3d11 = false
 angle_enable_d3d9 = false
