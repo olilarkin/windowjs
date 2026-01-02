@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install packages
         run: |
@@ -36,7 +36,7 @@ jobs:
 
       - name: Cache
         id: cache-libraries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             libraries/angle/include
@@ -112,7 +112,7 @@ jobs:
           du -b out/windowjs
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windowjs
           path: |
