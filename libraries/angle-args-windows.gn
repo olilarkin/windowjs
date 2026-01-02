@@ -13,8 +13,9 @@ angle_debug_layers_enabled = false
 # Use MSVC instead of Chrome's bundled clang
 is_clang = false
 
-# Use whatever SDK version is available (don't hardcode)
-windows_sdk_version = ""
+# Use latest available Windows SDK
+wdk_version = ""
+windows_sdk_version = "10.0.26100.0"
 
 # Windows-specific:
 angle_enable_d3d11 = true
