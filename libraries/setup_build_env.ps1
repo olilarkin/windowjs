@@ -30,8 +30,12 @@ if (-not($env:windowjs_visual_studio_ready -eq "1")) {
     $latestSdk = $sdkVersions[0].Name
     Write-Host "Using Windows SDK: $latestSdk"
 
-    # Set WindowsSDKVersion environment variable before calling vcvarsall
+    # Set Windows SDK environment variables before calling vcvarsall
+    $sdkBase = "C:\Program Files (x86)\Windows Kits\10"
+    $env:WindowsSDKDir = "$sdkBase\"
     $env:WindowsSDKVersion = "$latestSdk\"
+    $env:UCRTVersion = $latestSdk
+    $env:UniversalCRTSdkDir = "$sdkBase\"
     # Call vcvarsall with SDK version as positional argument
     cmd.exe /c "call `"$vcvarspath\VC\Auxiliary\Build\vcvarsall.bat`" x64 $latestSdk && set > %temp%\vcvars.txt"
 
