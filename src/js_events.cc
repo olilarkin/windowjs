@@ -1,5 +1,7 @@
 #include "js_events.h"
 
+#include <algorithm>
+
 #include <GLFW/glfw3.h>
 
 #include "fail.h"
