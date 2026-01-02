@@ -83,28 +83,36 @@ try {
 }
 
 
-if (-not(Test-Path -Path 'libraries\ninja' -PathType Container)) {
+# Check if ninja is already available in PATH (e.g., installed via package manager)
+$systemNinja = Get-Command ninja -ErrorAction SilentlyContinue
+if ($systemNinja) {
   Write-Host ""
-  Write-Host "Checking out the ninja build tool"
+  Write-Host "Using system ninja: $($systemNinja.Source)"
   Write-Host ""
-  git clone https://github.com/ninja-build/ninja libraries/ninja
-}
+} else {
+  if (-not(Test-Path -Path 'libraries\ninja' -PathType Container)) {
+    Write-Host ""
+    Write-Host "Checking out the ninja build tool"
+    Write-Host ""
+    git clone https://github.com/ninja-build/ninja libraries/ninja
+  }
 
 
-if (-not(Test-Path -Path 'libraries\ninja\ninja.exe' -PathType Leaf)) {
-  Write-Host ""
-  Write-Host "Building the ninja build tool"
-  Write-Host ""
-  pushd libraries\ninja
-  try {
-    Invoke-Expression "${depot_tools}/python.bat configure.py --bootstrap"
-    popd
-  } catch {
+  if (-not(Test-Path -Path 'libraries\ninja\ninja.exe' -PathType Leaf)) {
     Write-Host ""
-    Write-Host "Ninja build failed."
+    Write-Host "Building the ninja build tool"
     Write-Host ""
-    Write-Host "FAILED"
-    exit 1
+    pushd libraries\ninja
+    try {
+      Invoke-Expression "${depot_tools}/python.bat configure.py --bootstrap"
+      popd
+    } catch {
+      Write-Host ""
+      Write-Host "Ninja build failed."
+      Write-Host ""
+      Write-Host "FAILED"
+      exit 1
+    }
   }
 }
 
@@ -124,7 +132,12 @@ if (-not(Test-Path -Path 'libraries\gn\out\gn.exe' -PathType Leaf)) {
   pushd libraries\gn
   try {
     Invoke-Expression "${depot_tools}/python.bat build/gen.py"
-    Invoke-Expression "${depot_tools}/../ninja/ninja.exe -C out gn.exe"
+    # Use system ninja if available, otherwise use local build
+    if ($systemNinja) {
+      ninja -C out gn.exe
+    } else {
+      Invoke-Expression "${depot_tools}/../ninja/ninja.exe -C out gn.exe"
+    }
     popd
   } catch {
     Write-Host ""
