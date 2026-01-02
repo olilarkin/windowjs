@@ -5,8 +5,8 @@ is_debug = false
 skia_use_egl = true
 skia_gl_standard = "gles"
 
-clang_win = "../../../v8/third_party/llvm-build/Release+Asserts"
-clang_win_version = "17"
+# Use MSVC instead of clang (v8's clang isn't available at Skia build time)
+is_clang = false
 
 skia_enable_android_utils = false
 skia_enable_skvm_jit_when_possible = false
