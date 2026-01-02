@@ -16,6 +16,9 @@ use_sysroot = false
 # Use GCC to avoid Chrome's bundled clang version requirements
 is_clang = false
 
+# Disable warnings-as-errors (GCC 12+ has C++20 deprecation warnings in ANGLE code)
+treat_warnings_as_errors = false
+
 # Linux-specific:
 angle_enable_d3d11 = false
 angle_enable_d3d9 = false
