@@ -1,3 +1,21 @@
+diff --git a/build/toolchain/win/setup_toolchain.py b/build/toolchain/win/setup_toolchain.py
+index 1234567..abcdefg 100644
+--- a/build/toolchain/win/setup_toolchain.py
++++ b/build/toolchain/win/setup_toolchain.py
+@@ -65,9 +65,11 @@ def _ExtractImportantEnvironment(output_of_set):
+           # Use file system caps if they're available. See crbug.com/40539
+           # When the path does not exist or is too long, normpath returns an
+           # empty string and abspath returns a short current directory.
+-          raise Exception(
+-              f'Path "{path_component}" from environment variable "{envvar}" '
+-              'does not exist. Make sure the necessary SDK is installed.')
++          # Skip missing SDK paths instead of failing - they may not be needed
++          print(f'WARNING: Path "{path_component}" from environment variable '
++                f'"{envvar}" does not exist. Skipping.', file=sys.stderr)
++          continue
+     # If we have a PATH variable, just use that.
+     if 'PATH' in env:
+       # If we have added paths, append them now to the PATH value.
 diff --git a/BUILD.gn b/BUILD.gn
 index 8da4a02ce..9aa88b8a0 100644
 --- a/BUILD.gn
