@@ -35,6 +35,7 @@ if (WIN32)
 elseif (APPLE)
   target_link_libraries(skia INTERFACE
     ${SKIA_OUT_DIR}/libskia.a
+    z
     "-framework Cocoa"
     "-framework IOKit"
     "-framework CoreFoundation"
