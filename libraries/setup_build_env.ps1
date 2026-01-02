@@ -24,7 +24,13 @@ if (-not($env:windowjs_visual_studio_ready -eq "1")) {
     $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
     $vcvarspath = &$vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 
-    cmd.exe /c "call `"$vcvarspath\VC\Auxiliary\Build\vcvars64.bat`" && set > %temp%\vcvars.txt"
+    # Find the latest installed Windows SDK version
+    $sdkPath = "C:\Program Files (x86)\Windows Kits\10\Include"
+    $sdkVersions = Get-ChildItem $sdkPath -Directory | Where-Object { $_.Name -match "^10\.\d+\.\d+\.\d+$" } | Sort-Object Name -Descending
+    $latestSdk = $sdkVersions[0].Name
+    Write-Host "Using Windows SDK: $latestSdk"
+
+    cmd.exe /c "call `"$vcvarspath\VC\Auxiliary\Build\vcvars64.bat`" $latestSdk && set > %temp%\vcvars.txt"
 
     Get-Content "$env:temp\vcvars.txt" | Foreach-Object {
       if ($_ -match "^(.*?)=(.*)$") {
