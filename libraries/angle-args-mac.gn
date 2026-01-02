@@ -1,6 +1,7 @@
 is_component_build = false
 # target_cpu = "x64"
 is_debug = false
+treat_warnings_as_errors = false
 angle_assert_always_on = false
 dcheck_always_on = false
 dcheck_is_configurable = false
